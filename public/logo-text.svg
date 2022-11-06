@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 280 100" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+  <defs>
+    <bx:grid x="0" y="0" width="10" height="10"/>
+  </defs>
+  <path style="stroke-linejoin: round; stroke-width: 2px; fill: rgb(238, 138, 24); stroke: rgb(238, 138, 24);" d="M 18.937 39.376 L 14.562 34.376 C 14.562 24.376 27.687 14.376 49.562 14.376 C 71.437 14.376 84.562 24.376 84.562 34.376 L 80.187 39.376 C 75.812 24.376 62.687 24.376 53.937 24.376 L 53.937 70.626 C 53.937 75.626 45.187 75.626 45.187 70.626 L 45.187 24.376 C 36.437 24.376 23.312 24.376 18.937 39.376 Z">
+    <title>T</title>
+  </path>
+  <text style="fill: rgb(238, 138, 24); font-family: Arial, sans-serif; font-size: 50px; white-space: pre;" x="59.607" y="75.079"><title>ompasoft</title>ompasoft</text>
+</svg>

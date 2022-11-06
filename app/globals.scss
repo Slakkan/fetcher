@@ -1,0 +1,69 @@
+@import "../node_modules/bootstrap/scss/bootstrap-grid";
+
+@import "vars";
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-size: $text-lg;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans,
+    Helvetica Neue, sans-serif;
+}
+
+header {
+  width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.box {
+  box-shadow: rgba($secondary, 0.3) 0px 6px 12px 0px;
+}
+
+h1,
+h2,
+h3 {
+  color: $primary;
+}
+
+h1 {
+  font-size: $title-lg;
+}
+
+h2 {
+  font-size: $subtitle-lg;
+}
+
+h3 {
+  font-size: $big-lg;
+}
+
+button {
+  background: $secondary;
+  color: $primary;
+  padding: 8px 16px;
+  border: none;
+  font-size: $text-lg;
+  border-radius: 8px;
+  &:hover {
+    cursor: pointer;
+    color: white;
+  }
+}
+
+.weight{
+  &--normal {
+    font-weight: 500;
+  }
+  &--bold{
+    font-weight: bold;
+  }
+}
