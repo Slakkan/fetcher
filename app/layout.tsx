@@ -15,8 +15,11 @@ const RootLayout: FunctionComponent<PropsWithChildren> = ({ children }) => {
 				<link rel='icon' href='/logo.svg' />
 			</head>
 			<body>
-				<Header />
-				{children}
+				<div id="modals"></div>
+				<div id="content">
+					<Header />
+					{children}
+				</div>
 			</body>
 		</html>
 	)

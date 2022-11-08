@@ -21,8 +21,9 @@ const Navigation: FunctionComponent = () => {
 
     return (
         <nav className={styles.navigation}>
-            <ul className="p-0 my-3">
+            <ul className="p-0 m-0">
                 <li className={getLinkClass("")}><Link href="/">Home</Link></li>
+                <li className={getLinkClass("blocks")}><Link href="/blocks">Blocks</Link></li>
             </ul>
         </nav>
     )

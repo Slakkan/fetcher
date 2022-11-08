@@ -1,0 +1,17 @@
+@import "vars";
+
+.account{
+    display: none;
+    &__image{
+        border-radius: 50%;
+    }
+}
+
+
+@media (min-width: 992px) { 
+    .account{
+        display: flex;
+        flex-direction: column;
+        text-align: end;
+    }
+}

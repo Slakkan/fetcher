@@ -1,21 +1,45 @@
 @import "vars";
 
 .navigation {
+  display: none;
   & ul {
+    font-size: $big-sm;
+  }
+}
+
+@media (min-width: 768px) {
+  .navigation {
     display: flex;
     align-items: flex-end;
-    list-style: none;
-    font-size: $big-lg;
-    white-space: nowrap;
-  }
-  &__link {
-    color: $secondary;
-    font-weight: 500;
-    &--active{
-      color:$primary
+    & ul {
+      display: flex;
+      align-items: flex-end;
+      list-style: none;
+      font-size: $big-md;
+      white-space: nowrap;
     }
-    &:hover {
-      color:$primary
+    &__link {
+      color: $secondary;
+      font-weight: 500;
+      &--active a {
+        color: $primary !important;
+      }
+      & a {
+        color: $secondary;
+        text-decoration: none;
+        font-style: normal;
+        &:hover {
+          color: $primary !important;
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 992px) {
+  .navigation {
+    & ul {
+      font-size: $big-lg;
     }
   }
 }
