@@ -1,7 +1,6 @@
 @import "vars";
 
 .navigation {
-  display: none;
   & ul {
     font-size: $big-sm;
   }
@@ -17,21 +16,6 @@
       list-style: none;
       font-size: $big-md;
       white-space: nowrap;
-    }
-    &__link {
-      color: $secondary;
-      font-weight: 500;
-      &--active a {
-        color: $primary !important;
-      }
-      & a {
-        color: $secondary;
-        text-decoration: none;
-        font-style: normal;
-        &:hover {
-          color: $primary !important;
-        }
-      }
     }
   }
 }

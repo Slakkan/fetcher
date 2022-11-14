@@ -15,10 +15,11 @@ const RootLayout: FunctionComponent<PropsWithChildren> = ({ children }) => {
 				<link rel='icon' href='/logo.svg' />
 			</head>
 			<body>
-				<div id="modals"></div>
 				<div id="content">
 					<Header />
-					{children}
+					<div className="page py-5">
+						{children}
+					</div>
 				</div>
 			</body>
 		</html>

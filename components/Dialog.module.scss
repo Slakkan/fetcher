@@ -1,0 +1,15 @@
+.dialog {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 60%;
+  &__bubble {
+    background: white;
+    border-radius: 36px;
+    border-end-end-radius: 0;
+  }
+  & img {
+    transform: translate(120%, -30%);
+  }
+}

@@ -1,45 +1,80 @@
 @import "../app/vars";
 
 .modal {
-    display: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  min-height: 600px;
+  background: rgba($color: $secondary, $alpha: 0.2);
+  &__container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: 16px;
+    width: 95%;
+    min-height: 240px;
+    & > * {
+      flex-grow: 1;
+    }
+  }
+  &__tabs {
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 1000;
-    background: rgba($color: $secondary, $alpha: 0.2);
-    &--open {
-        display: flex;
-        justify-content: center;
-        align-items: center;
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    transform: translateY(-100%);
+    user-select: none;
+  }
+  &__tab {
+    color: $secondary;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: $off-white;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    min-height: 40px;
+    transform: translateY(2px);
+    &:hover {
+      cursor: pointer;
+      color: $primary;
     }
-    &__container {
-        display: flex;
-        flex-direction: column;
-        background: white;
-        border-radius: 16px;
-        width: 85%;
-        min-height: 360px;
-        & > * {
-            flex-grow: 1;
-        }
+    &:focus-visible {
+      outline: 2px solid $primary;
+      border-bottom: none;
     }
+    &--active {
+      background: white;
+      color: $primary;
+    }
+  }
 }
 
 @media (min-width: 768px) {
-    .modal {
-        &__container {
-            width: 70%;
-            min-height: 40%;
-        }
+  .modal {
+    &__container {
+      width: 600px;
+      min-height: 280px;
     }
+  }
 }
 
 @media (min-width: 992px) {
-    .modal {
-        &__container {
-            width: 720px;
-        }
+  .modal {
+    &__container {
+      width: 720px;
+      min-height: 320px;
     }
+  }
 }

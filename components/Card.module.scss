@@ -1,0 +1,14 @@
+@import "../app/vars";
+
+.card {
+  color: $secondary;
+  background: white;
+  &__column {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  &:hover {
+    color: $primary;
+    cursor: pointer;
+  }
+}

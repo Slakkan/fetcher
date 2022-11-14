@@ -7,6 +7,8 @@ import styles from "./Button.module.scss"
 export interface ButtonProps {
     text?: string,
     isSecondary?: boolean,
+    isDisabled?: boolean,
+    size?: "small" | "medium",
     onClick: MouseEventHandler,
     icon?: {
         src: string,
@@ -16,19 +18,22 @@ export interface ButtonProps {
     }
 }
 
-const Button: FunctionComponent<ButtonProps> = ({ text, isSecondary,icon, onClick }) => {
+const Button: FunctionComponent<ButtonProps> = ({ text, isSecondary, icon, onClick, size = "medium", isDisabled }) => {
 
     const getButtonClass = useMemo(() => {
         const base = styles.button
         const secondary = styles["button--secondary"]
-        return `${base} ${isSecondary ? secondary : ""} px-3 py-1 box`
-    },[isSecondary])
+        const small = 'px-2 py-1'
+        const medium = 'px-3 py-2'
+        const isSmall = size === "small"
+        return `${base} ${isSecondary ? secondary : ""} ${isSmall ? small : medium}`
+    }, [isSecondary, size])
 
     return (
-        <div className={getButtonClass} onClick={onClick}>
+        <button className={getButtonClass} onClick={onClick} disabled={isDisabled}>
             {text && <span>{text}</span>}
             {icon && <Image priority={true} {...icon} alt={icon.alt} />}
-        </div>
+        </button>
     )
 }
 

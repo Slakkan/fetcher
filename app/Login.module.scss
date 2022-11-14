@@ -1,17 +1,25 @@
 @import "vars";
 
-.account{
-    display: none;
-    &__image{
-        border-radius: 50%;
-    }
+.account {
+  display: none;
+  &__image {
+    border-radius: 50%;
+  }
 }
 
+.signout {
+  background: none;
+  font-style: italic;
+  &:hover {
+    text-decoration: underline;
+    color: $primary;
+  }
+}
 
-@media (min-width: 992px) { 
-    .account{
-        display: flex;
-        flex-direction: column;
-        text-align: end;
-    }
+@media (min-width: 992px) {
+  .account {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
 }
