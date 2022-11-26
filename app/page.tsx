@@ -1,15 +1,9 @@
-import { NextPage } from 'next';
-import Image from "next/image"
+import { FunctionComponent } from "react";
 
-const Home: NextPage = () => {
+
+const Home: FunctionComponent = () => {
     return (
-        <div className='container'>
-            <div className="row">
-                <div className="offset-6 col-6">
-                    
-                </div>
-            </div>
-        </div>
+        <></>
     );
 };
 

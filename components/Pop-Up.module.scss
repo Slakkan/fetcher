@@ -1,0 +1,40 @@
+@import "../app/vars";
+
+.popup {
+  position: absolute;
+  display: none;
+  background: white;
+  z-index: 10000;
+  word-break: break-all;
+  &:focus {
+    outline: none;
+  }
+  &--open {
+    display: block;
+  }
+  &--right {
+    top: 0;
+    right: -14px;
+    transform: translateX(100%);
+  }
+  &--left {
+    top: 0;
+    left: -14px;
+    transform: translateX(-100%);
+  }
+  &--top {
+    top: -14px;
+    left: 0;
+    transform: translateY(-100%);
+  }
+  &--bottom {
+    bottom: -14px;
+    left: 0;
+    transform: translateY(100%);
+  }
+  &--bottom-right {
+    bottom: -14px;
+    right: 0;
+    transform: translatey(100%);
+  }
+}

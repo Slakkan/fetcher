@@ -1,0 +1,35 @@
+@import "../../app/vars";
+
+.input {
+  &__frame {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    height: 80px;
+    outline: 2px solid $secondary;
+    border-radius: 8px;
+    user-select: none;
+    max-width: 150px;
+    color: $secondary;
+    flex-grow: 1;
+    &--active {
+      color: $primary;
+    }
+    &:focus {
+      outline: 2px solid $primary;
+    }
+    &:hover {
+      cursor: pointer;
+      color: $primary;
+    }
+  }
+}
+
+@media (min-width: 992px) {
+  .input {
+    &__frame {
+      min-width: 150px;
+    }
+  }
+}

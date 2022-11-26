@@ -12,17 +12,20 @@ const Navigation: FunctionComponent = () => {
     const getLinkClass = useCallback((href: string) => {
         if (!path) return "";
 
-        const base = styles.navigation__link;
-        const active = styles["navigation__link--active"]
+        const base = "link";
+        const active = "link--active"
 
         const isActive = path.split("/")[1] === href
-        return `${base} ${isActive ? active : ""} ms-3`
+        return `${base} ${isActive ? active : ""} me-3`
     }, [path])
 
     return (
         <nav className={styles.navigation}>
-            <ul className="p-0 my-3">
-                <li className={getLinkClass("")}><Link href="/">Home</Link></li>
+            <ul className="d-flex justify-content-center m-0 p-0 py-0 py-md-3">
+                <li><Link className={getLinkClass("")} href="/">Home</Link></li>
+                <li><Link className={getLinkClass("design")} href="/design">Design</Link></li>
+                <li><Link className={getLinkClass("build")} href="/build">Build</Link></li>
+                <li><Link className={getLinkClass("projects")} href="/projects">Projects</Link></li>
             </ul>
         </nav>
     )

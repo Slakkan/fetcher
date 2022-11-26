@@ -1,0 +1,62 @@
+@import "vars";
+
+.login {
+  &__image {
+    border-radius: 50%;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+  &__popup {
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: max-content;
+    height: 100vh;
+    min-width: 200px;
+    transition: transform 0.1s ease-in-out !important;
+    transform: translateX(100%) !important;
+    &--open {
+      transform: translateX(0) !important;
+    }
+  }
+  &__link {
+    background: none;
+    width: 100%;
+    & > h3 {
+      color: $secondary;
+    }
+    &:hover {
+      & > h3 {
+        color: $primary;
+      }
+      background-color: $off-white;
+    }
+  }
+  &__overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 100vw;
+    z-index: 10;
+    background: $secondary;
+    opacity: 0.5;
+  }
+}
+
+@media (min-width: 768px) {
+  .login {
+    &__popup {
+      min-width: 240px;
+    }
+  }
+}
+
+@media (min-width: 992px) {
+  .login {
+    &__popup {
+      min-width: 280px;
+    }
+  }
+}

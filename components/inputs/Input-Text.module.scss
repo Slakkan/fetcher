@@ -1,0 +1,26 @@
+@import "../../app/vars";
+
+.input {
+  display: flex;
+  height: 32px;
+  border-radius: 8px;
+  border: 2px solid $secondary;
+  outline: none;
+  width: 100%;
+  min-width: 80px;
+  &:focus {
+    border: 2px solid $primary;
+  }
+  &:disabled {
+    background: $off-white;
+    opacity: 0.5;
+  }
+  &__errors {
+    white-space: nowrap;
+    position: absolute;
+    transform: translateY(100%);
+    left: 0;
+    bottom: 0;
+    color: $error;
+  }
+}

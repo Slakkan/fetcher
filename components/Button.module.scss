@@ -1,0 +1,45 @@
+@import "../app/vars";
+
+.button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid $primary;
+  border-radius: 8px;
+  background: white;
+  color: $primary;
+  font-weight: bold;
+  user-select: none;
+  outline: none;
+  &:disabled {
+    color: $secondary;
+    background: $off-white;
+    border: 2px solid $secondary;
+    & img {
+      filter: grayscale(1);
+    }
+  }
+  &:hover:not(:disabled),
+  &:focus-visible {
+    outline: none;
+    background: $primary;
+    color: white;
+    cursor: pointer;
+    & img {
+      filter: grayscale(1) brightness(100);
+    }
+  }
+  &--secondary {
+    color: $secondary;
+    border: 2px solid $secondary;
+    &:hover,
+    &:focus-visible {
+      color: $primary;
+      background: white;
+      border: 2px solid $primary;
+      & img {
+        filter: none;
+      }
+    }
+  }
+}
