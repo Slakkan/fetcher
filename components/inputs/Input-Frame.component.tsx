@@ -1,16 +1,18 @@
-import { Dispatch, FunctionComponent, SetStateAction, useCallback, useEffect, useState } from "react"
+"use client"
+import { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react"
 
 import styles from "./Input-Frame.module.scss"
+import { HasKeyname } from "./Input-Text.component"
 
-interface InputFrameProps {
+interface InputFrameProps<T extends HasKeyname> {
     defaultValue?: string,
-    data: Record<string, any>,
-    setData: Dispatch<SetStateAction<Record<string, any>>>,
+    data: T,
+    setData: Dispatch<SetStateAction<T>>,
     keyName: string,
     valueList: string[],
 }
 
-const InputFrame: FunctionComponent<InputFrameProps> = ({ data, setData, keyName, defaultValue, valueList }) => {
+const InputFrame = <T extends HasKeyname,>({ data, setData, keyName, defaultValue, valueList }: InputFrameProps<T>) => {
     const [selectedValue, setSelectedValue] = useState(data[keyName] ?? defaultValue ?? valueList[0])
 
     useEffect(() => {

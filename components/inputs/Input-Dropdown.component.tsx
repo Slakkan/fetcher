@@ -1,22 +1,23 @@
 "use client"
-import { Dispatch, FunctionComponent, SetStateAction, useCallback, useEffect, useMemo, useState } from "react"
+import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import styles from "./Input-Dropdown.module.scss"
-import useWidth from "../../hooks/useWidth"
+import useWindowSize from "../../hooks/useWidth"
+import { HasKeyname } from "./Input-Text.component"
 
-interface InputDropdownProps {
+interface InputDropdownProps<T extends HasKeyname> {
     valueList: string[]
     keyName: string,
-    data: Record<string, any>,
-    setData: Dispatch<SetStateAction<Record<string, any>>>,
+    data: T,
+    setData: Dispatch<SetStateAction<T>>,
     disabled?: boolean,
 }
 
-const InputDropdown: FunctionComponent<InputDropdownProps> = ({ valueList, keyName, data, setData, disabled: isDisabled = false }) => {
+const InputDropdown = <T extends HasKeyname,>({ valueList, keyName, data, setData, disabled: isDisabled = false }: InputDropdownProps<T>) => {
     const [value, setValue] = useState<string>(data[keyName] ?? valueList[0])
     const [isOpen, setIsOpen] = useState(false)
     const [width, setWidth] = useState(0)
-    const windowWidth = useWidth()
+    const [windowWidth] = useWindowSize()
 
     const getDropdownWidth = useCallback((node: HTMLDivElement) => {
         if (node && windowWidth) {
@@ -63,8 +64,8 @@ const InputDropdown: FunctionComponent<InputDropdownProps> = ({ valueList, keyNa
                     <Image className={styles.dropdown__chevron} src={getImgSrc} alt="v" width={24} height={24} />
                     <div className="ps-2 pe-5" ref={getDropdownWidth}>{value}</div>
                 </div>
-                {valueList.map((value) => (
-                    <div key={value} className={getOptionClass(value)} onClick={() => setValue(value)}>{value}</div>
+                {valueList.map((value, index) => (
+                    <div key={"#" + index + "-" + value} className={getOptionClass(value)} onClick={() => setValue(value)}>{value}</div>
                 ))}
             </div>
         </div>

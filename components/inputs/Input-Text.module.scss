@@ -7,6 +7,7 @@
   border: 2px solid $secondary;
   outline: none;
   width: 100%;
+  min-width: 80px;
   &:focus {
     border: 2px solid $primary;
   }

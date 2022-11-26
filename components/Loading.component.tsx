@@ -1,4 +1,5 @@
-import { FunctionComponent, useMemo } from "react"
+"use client"
+import { FunctionComponent } from "react"
 
 interface LoadingProps {
     size?: "small" | "normal" | "big"

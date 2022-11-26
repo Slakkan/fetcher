@@ -1,27 +1,35 @@
 "use client"
-import { ChangeEventHandler, Dispatch, FocusEventHandler, FunctionComponent, KeyboardEventHandler, MutableRefObject, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEventHandler, Dispatch, FocusEventHandler, KeyboardEventHandler, MutableRefObject, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import styles from "./Input-Text.module.scss"
 import useDebounce from "../../hooks/useDebounce";
-import { isClamped, isNumber, isObjectNotEmpty, isValidPropertyName } from "../../utils/validators";
+import { isClamped, isNumber, isValidPropertyName } from "../../utils/validation-utils";
 import { InputErrors } from "../../models/Input.model";
-import { transformToCamelCase } from "../../utils/ui-utils";
+import { isMobile, transformToCamelCase } from "../../utils/ui-utils";
+import useWindowSize from "../../hooks/useWidth";
 
-interface InputTextProps {
+export type HasKeyname = { [keyName: string]: any }
+interface InputTextProps<T extends HasKeyname> {
     keyName: string,
+    formKeyName?: string,
     initialValue?: string,
-    data: Record<string, any>,
-    setData: Dispatch<SetStateAction<Record<string, any>>>,
+    data: T,
+    setData: Dispatch<SetStateAction<T>>,
+    dataErrors: InputErrors[],
     setDataErrors: Dispatch<SetStateAction<InputErrors[]>>,
     clearInput?: MutableRefObject<() => void>,
     onKeyDown?: KeyboardEventHandler<HTMLInputElement>,
-    id?: string,
     validations?: InputTextValidation[],
+    blackList?: string[],
+    blackListErrorMessage?: string,
     clampMax?: number,
     clampMin?: number,
     autocomplete?: "on" | "off",
     copyTarget?: string,
     disabled?: boolean,
+    validateDisabled?: boolean,
+    autoFocus?: boolean,
+    notFocusWithTab?: boolean,
 }
 
 export enum InputTextValidation {
@@ -29,17 +37,24 @@ export enum InputTextValidation {
     isNumber,
     isInteger,
     isClamped,
-    isValidKey
+    isValidKey,
+    isBlackList
 }
 
-const InputText: FunctionComponent<InputTextProps> = ({ keyName, initialValue = "", data, setData, setDataErrors, clearInput, onKeyDown, validations, clampMin = 0, clampMax = 255, id = "", autocomplete = "on", copyTarget, disabled = false }) => {
+const InputText = <T extends HasKeyname,>({ keyName, formKeyName = "", initialValue = "", data, setData, dataErrors, setDataErrors, clearInput, onKeyDown, validations, blackList, blackListErrorMessage, clampMin = 0, clampMax = 255, autocomplete = "on", copyTarget, disabled = false, validateDisabled = false, autoFocus, notFocusWithTab = false }: InputTextProps<T>) => {
     const isFirstRender = useRef(true)
-    const [value, setValue] = useState<string>(data[keyName] ?? initialValue)
+    const [value, setValue] = useState<string>(data[keyName] !== undefined ? data[keyName] : initialValue)
     const [debouncedValue, setDebouncedValue] = useDebounce(value, 200)
-    const [inputErrors, setInputErrors] = useState<InputErrors>({ keyName, errors: [] })
-    const [showErrors, setShowErrors] = useState(false)
+    const dataError = useMemo(() => {
+        const err = dataErrors.find(dataError => dataError.keyName === keyName)
+        return err ? ({ ...err }) : undefined
+    }, [dataErrors, keyName])
+    const [showErrors, setShowErrors] = useState(dataError ? dataError.showErrors : false)
+    const [inputErrors, setInputErrors] = useState<InputErrors>(dataError ? dataError : { keyName, formKeyName, errors: [] })
     const [showErrorsDebounced] = useDebounce(showErrors, 200)
     const inputElement = useRef<HTMLInputElement>(null)
+    const [, windowHeight] = useWindowSize()
+
 
     useEffect(() => {
         if (!isFirstRender.current) {
@@ -54,14 +69,16 @@ const InputText: FunctionComponent<InputTextProps> = ({ keyName, initialValue = 
 
     useEffect(() => {
         if (clearInput) {
-            clearInput.current = () => { setValue("") }
+            clearInput.current = () => { setValue(() => "") }
         }
     }, [clearInput, setData])
 
     const getInputType = useMemo(() => {
-        if (validations && validations.includes(InputTextValidation.isInteger)) setValue((prev) => {
-            return Math.floor(+prev).toString()
-        });
+        if (validations && validations.includes(InputTextValidation.isInteger)) {
+            setValue((prev) => {
+                return Math.floor(+prev).toString()
+            })
+        };
 
         if (validations && validations.includes(InputTextValidation.isNumber)) {
             return "number"
@@ -70,7 +87,9 @@ const InputText: FunctionComponent<InputTextProps> = ({ keyName, initialValue = 
         }
     }, [validations])
 
+
     const validate = useCallback((value: string) => {
+        if (disabled && !validateDisabled) return;
         const newErrors: string[] = []
         let error: string
         validations?.forEach(validation => {
@@ -95,18 +114,23 @@ const InputText: FunctionComponent<InputTextProps> = ({ keyName, initialValue = 
                     error = `${value} is not a valid property name`
                     if (value && !isValidPropertyName(value)) newErrors.push(error);
                     break;
+                case InputTextValidation.isBlackList:
+                    error = blackListErrorMessage ?? `${value} is not allowed`
+                    if (blackList && blackList.includes(value)) newErrors.push(error);
+                    break;
             }
         })
+
         setInputErrors((prev) => ({ ...prev, errors: newErrors }))
-    }, [clampMax, clampMin, validations])
+    }, [blackList, blackListErrorMessage, clampMax, clampMin, disabled, validateDisabled, validations])
 
     useEffect(() => {
         setDataErrors(prev => {
-            const index = prev.findIndex(dataErrors => dataErrors.keyName === keyName)
+            const index = prev.findIndex(dataError => dataError.keyName === keyName)
             if (index === -1) {
                 return [...prev, inputErrors]
             } else {
-                const newArray = prev.filter(dataErrors => dataErrors.keyName !== keyName)
+                const newArray = prev.filter(dataError => dataError.keyName !== keyName)
                 return [...newArray, inputErrors]
             }
         })
@@ -117,10 +141,18 @@ const InputText: FunctionComponent<InputTextProps> = ({ keyName, initialValue = 
     }
 
     useEffect(() => {
-        if (!inputErrors.errors.length) {
+        if (disabled) {
+            setInputErrors((prev) => ({ ...prev, errors: new Array(), showErrors: false }))
+        } else if (inputElement.current) {
+            validate(inputElement.current.value)
+        }
+    }, [disabled, validate])
+
+    useEffect(() => {
+        if (!inputErrors.errors.length && !inputErrors.showErrors) {
             setShowErrors(false)
         }
-    }, [inputErrors.errors])
+    }, [inputErrors.errors, inputErrors.showErrors])
 
     const onBlurHandler: FocusEventHandler<HTMLInputElement> = ({ target }) => {
         setDebouncedValue(target.value)
@@ -128,26 +160,48 @@ const InputText: FunctionComponent<InputTextProps> = ({ keyName, initialValue = 
         setShowErrors(true)
     }
 
+    // Refresh displayed value from data obtained via copyTarget
+    useEffect(() => {
+        if (copyTarget) {
+            setValue(data[keyName])
+            if (inputElement.current) {
+                inputElement.current.value = data[keyName]
+            }
+        }
+    }, [copyTarget, data, initialValue, keyName, setData])
+
     useEffect(() => {
         validate(debouncedValue);
         setData(prev => ({ ...prev, [keyName]: debouncedValue }))
+
     }, [debouncedValue, setData, keyName, validate])
 
     useEffect(() => {
-        if (copyTarget && isObjectNotEmpty(data) && data[copyTarget]) {
-            setValue(() => transformToCamelCase(data[copyTarget]))
+        const handler = () => setShowErrors(true)
+        let element: Element | null = null;
+        if (copyTarget) {
+            element = document.querySelector<HTMLInputElement>("#" + copyTarget)
+            element!.addEventListener("blur", handler)
         }
-    }, [copyTarget, data])
+        return () => element?.removeEventListener("blur", handler)
+    }, [copyTarget, keyName])
 
     useEffect(() => {
-        if (!disabled && inputElement.current) {
+        if (copyTarget && value !== data[copyTarget]) {
+            setValue(() => transformToCamelCase(data[copyTarget] ?? ""))
+        }
+    }, [copyTarget, data, value])
+
+    useEffect(() => {
+        if (autoFocus && !isMobile() && windowHeight > 700 && inputElement.current && isFirstRender.current) {
             inputElement.current.focus()
         }
-    }, [disabled])
+    }, [autoFocus, windowHeight])
+
 
     return (
-        <div className="mb-3" style={{ position: "relative" }}>
-            <input ref={inputElement} className={styles.input + " ps-2"} value={value} id={id} type={getInputType} onChange={onInputChange} onBlur={onBlurHandler} onKeyDown={onKeyDown} autoComplete={autocomplete} disabled={disabled} />
+        <div className="mb-4" style={{ position: "relative" }}>
+            <input id={keyName} ref={inputElement} tabIndex={notFocusWithTab ? -1 : undefined} className={styles.input + " ps-2"} value={value} type={getInputType} onChange={onInputChange} onBlur={onBlurHandler} onKeyDown={onKeyDown} autoComplete={autocomplete} disabled={disabled} />
             {showErrorsDebounced && <span className={styles.input__errors + " hint weight--bold"}>{inputErrors.errors.join(", ")}</span>}
         </div>
     )

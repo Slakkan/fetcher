@@ -1,5 +1,5 @@
 "use client"
-import React, { Dispatch, FunctionComponent, MouseEventHandler, PropsWithChildren, SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
+import React, { Dispatch, FunctionComponent, MouseEventHandler, PropsWithChildren, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from 'react-dom'
 
 import styles from "./Modal.module.scss"
@@ -14,6 +14,7 @@ interface ModalProps {
 
 const Modal: FunctionComponent<PropsWithChildren<ModalProps>> = ({ children, isOpen, setIsOpen, tabs, selectedTab, setSelectedTab }) => {
     const [container, setContainer] = useState<HTMLBodyElement>()
+    const modal = useRef<HTMLDivElement>(null)
 
     const onBackdropClick: MouseEventHandler<HTMLDivElement> = (e) => {
         if (e.target === e.currentTarget) {
@@ -33,13 +34,22 @@ const Modal: FunctionComponent<PropsWithChildren<ModalProps>> = ({ children, isO
         return `${base} ${isActive ? active : ""} col-3 py-2`
     }, [selectedTab])
 
+    useEffect(() => {
+        if (isOpen && modal.current && container) {
+            modal.current.focus();
+            container.style.minHeight = (Math.max(modal.current.clientHeight + 150, container.clientHeight) - 1) + "px"
+        } else if (!isOpen && container) {
+            container.style.minHeight = "inherit"
+        }
+    }, [container, isOpen])
+
     if (!container) return <></>
 
     return createPortal(
         <>
             {isOpen &&
                 <div id="modal" className={styles.modal} onMouseDown={onBackdropClick}>
-                    <div className={styles.modal__container + " p-4 box"}>
+                    <div ref={modal} tabIndex={0} className={styles.modal__container + " p-4 p-md-5 box"}>
                         {tabs && setSelectedTab && (
                             <div className={styles.modal__tabs}>
                                 {tabs.map((tab) => <button className={getTabClass(tab)} onClick={() => setSelectedTab(tab)} key={tab}>{tab}</button>)}

@@ -1,15 +1,18 @@
-import { Dispatch, FunctionComponent, SetStateAction, useCallback, useEffect, useMemo, useState } from "react"
+"use client"
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react"
 import InputCheckbox from "./Input-Checkbox.component"
+import { HasKeyname } from "./Input-Text.component"
 
-interface InputListProps {
+interface InputListProps<T extends HasKeyname> {
     valueList: string[],
     className?: string,
     keyName: string,
-    data: Record<string, any>,
-    setData: Dispatch<SetStateAction<Record<string, any[]>>>,
+    data: T,
+    setData: Dispatch<SetStateAction<T>>,
+    disabled?: boolean
 }
 
-const InputList: FunctionComponent<InputListProps> = ({ valueList, className, keyName, data, setData }) => {
+const InputList = <T extends HasKeyname,>({ valueList, className, keyName, data, setData, disabled = false }: InputListProps<T>) => {
     const getInitialValues = useMemo(() => {
         const object: Record<string, boolean> = {}
         if (data[keyName]) {
@@ -35,7 +38,7 @@ const InputList: FunctionComponent<InputListProps> = ({ valueList, className, ke
 
     return (
         <>
-            {valueList.map((value, index) => <InputCheckbox key={value} keyName={value} data={values} setData={setValues} id={keyName + "-" + index}><span className={className}>{value}</span></InputCheckbox>)}
+            {valueList.map((value, index) => <InputCheckbox key={"#" + index + "-" + value} keyName={value} className="me-2" data={values} setData={setValues} id={keyName + "-" + index} disabled={disabled}><span className={className}>{value}</span></InputCheckbox>)}
         </>
     )
 }

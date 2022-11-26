@@ -1,0 +1,42 @@
+@import "../app/vars";
+
+.pagination {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  flex-grow: 1;
+  &__page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    color: $secondary;
+    border-radius: 8px;
+    font-weight: bold;
+    background: white;
+    min-width: 30px;
+    border: none;
+    &:disabled {
+      background: $off-white;
+      &:hover {
+        background: $off-white;
+        cursor: not-allowed;
+      }
+    }
+    & img {
+      width: 1em;
+      height: 1em;
+    }
+    &--selected {
+      color: $primary;
+    }
+    &--hidden {
+      display: none;
+    }
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}

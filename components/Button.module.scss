@@ -10,6 +10,7 @@
   color: $primary;
   font-weight: bold;
   user-select: none;
+  outline: none;
   &:disabled {
     color: $secondary;
     background: $off-white;

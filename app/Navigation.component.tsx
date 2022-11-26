@@ -16,14 +16,16 @@ const Navigation: FunctionComponent = () => {
         const active = "link--active"
 
         const isActive = path.split("/")[1] === href
-        return `${base} ${isActive ? active : ""} ms-3 p-1`
+        return `${base} ${isActive ? active : ""} me-3`
     }, [path])
 
     return (
         <nav className={styles.navigation}>
-            <ul className="d-flex p-0 m-0 pb-md-3">
+            <ul className="d-flex justify-content-center m-0 p-0 py-0 py-md-3">
                 <li><Link className={getLinkClass("")} href="/">Home</Link></li>
                 <li><Link className={getLinkClass("design")} href="/design">Design</Link></li>
+                <li><Link className={getLinkClass("build")} href="/build">Build</Link></li>
+                <li><Link className={getLinkClass("projects")} href="/projects">Projects</Link></li>
             </ul>
         </nav>
     )

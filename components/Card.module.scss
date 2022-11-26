@@ -1,14 +1,70 @@
 @import "../app/vars";
 
 .card {
+  max-height: 46px;
+  flex-grow: 1;
   color: $secondary;
-  background: white;
+  position: relative;
+  transition: none;
+  flex-grow: 1;
+  overflow: hidden;
+  &:focus {
+    outline: 2px solid $primary;
+  }
+  & img {
+    height: auto;
+  }
+  &--expanded {
+    transition: all 0.4s ease-in-out;
+    max-height: 600px;
+    &:hover {
+      color: $secondary !important;
+    }
+    & div {
+      white-space: pre-wrap !important;
+    }
+  }
   &__column {
-    overflow: hidden;
-    text-overflow: ellipsis;
+    pointer-events: none;
+  }
+  &__component {
+    display: flex;
+    flex-wrap: wrap;
+    pointer-events: auto;
   }
   &:hover {
-    color: $primary;
+    background: lighten($primary, 25) !important;
     cursor: pointer;
+  }
+  &__chevron {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 24px;
+  }
+}
+
+@media (min-width: 768px) {
+  .card {
+    max-height: 48px;
+    &--expanded {
+      max-height: 600px;
+    }
+    &__chevron {
+      top: 2px;
+      width: 26px;
+    }
+  }
+}
+
+@media (min-width: 992px) {
+  .card {
+    max-height: 48px;
+    &--expanded {
+      max-height: 600px;
+    }
+    &__chevron {
+      width: 28px;
+    }
   }
 }

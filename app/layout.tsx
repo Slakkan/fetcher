@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { FunctionComponent, PropsWithChildren } from "react"
+import FirebaseProvider from "../components/Firebase-Provider.component"
 
 import "./globals.scss"
 import Header from "./Header.component"
@@ -15,12 +16,14 @@ const RootLayout: FunctionComponent<PropsWithChildren> = ({ children }) => {
 				<link rel='icon' href='/logo.svg' />
 			</head>
 			<body>
-				<div id="content">
-					<Header />
-					<div className="page py-5">
-						{children}
+				<FirebaseProvider>
+					<div id="content">
+						<Header />
+						<div className="page background--gray">
+							{children}
+						</div>
 					</div>
-				</div>
+				</FirebaseProvider>
 			</body>
 		</html>
 	)

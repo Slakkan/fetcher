@@ -1,18 +1,21 @@
-import { Dispatch, FunctionComponent, KeyboardEventHandler, PropsWithChildren, SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
+"use client"
+import { Dispatch, KeyboardEventHandler, PropsWithChildren, SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image"
 
 import styles from './Input-Checkbox.module.scss';
+import { HasKeyname } from "./Input-Text.component";
 
-interface InputCheckboxProps {
+interface InputCheckboxProps<T extends HasKeyname> {
     id: string,
     keyName: string,
-    data: Record<string, any>,
-    setData: Dispatch<SetStateAction<Record<string, any>>>,
+    className?: string,
+    data: T,
+    setData: Dispatch<SetStateAction<T>>,
     defaultValue?: boolean,
     disabled?: boolean
 }
 
-const InputCheckbox: FunctionComponent<PropsWithChildren<InputCheckboxProps>> = ({ id, keyName, data, setData, defaultValue = false, children, disabled = false }) => {
+const InputCheckbox = <T extends HasKeyname,>({ id, keyName, className = "", data, setData, defaultValue = false, children, disabled = false }: PropsWithChildren<InputCheckboxProps<T>>) => {
     const [value, setValue] = useState<boolean>(data[keyName] ?? defaultValue)
 
     useEffect(() => {
@@ -36,7 +39,7 @@ const InputCheckbox: FunctionComponent<PropsWithChildren<InputCheckboxProps>> = 
     }, [value])
 
     return (
-        <div className={styles.checkbox}>
+        <div className={styles.checkbox + " " + className}>
             <button className="p-0 me-1 me-md-2" onKeyDown={onEnterKeyDown} disabled={disabled}>
                 <label className={getLabelClassName} htmlFor={id}>
                     {value && <Image src="/icons/check-solid.svg" alt="X" width={20} height={20} />}
