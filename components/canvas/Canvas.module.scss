@@ -1,0 +1,37 @@
+@import "../../app/vars";
+
+.canvas {
+  width: 100%;
+  max-width: 1024px;
+  touch-action: none;
+  &__svg {
+    background: $off-white;
+    border-radius: 16px;
+  }
+  &__rect {
+    filter: drop-shadow(4px 6px 4px rgba(0, 0, 0, 0.3));
+    &:focus-visible,
+    &:focus {
+      outline: 2px solid $primary !important;
+    }
+  }
+  &__drawrect {
+    fill: greenyellow;
+    pointer-events: none;
+  }
+  &__anchor {
+    &:hover {
+      transform: scale(2);
+      cursor: pointer;
+    }
+  }
+  &__handle {
+    display: none;
+    &:hover {
+      cursor: pointer;
+    }
+    &--selected {
+      display: block;
+    }
+  }
+}

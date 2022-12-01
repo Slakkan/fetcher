@@ -53,7 +53,7 @@ const Blocks: FunctionComponent = () => {
     useEffect(() => {
         if (!openProjectId) return;
         let unsubscribe: Unsubscribe | undefined
-        const blockQuery = query(ref(dbClient, "blocks"), orderByChild("project"), equalTo(openProjectId), limitToFirst(1000))
+        const blockQuery = query(ref(dbClient, "designs"), orderByChild("project"), equalTo(openProjectId), limitToFirst(1000))
         unsubscribe = onValue(blockQuery, (snapshot) => {
             const [blockKeys, blocks] = getValuesFromSnapshot<Block>(snapshot)
             setBlockKeys(blockKeys)
@@ -71,7 +71,7 @@ const Blocks: FunctionComponent = () => {
 
         const { name, keyName } = data;
 
-        await push(ref(dbClient, "blocks"), {
+        await push(ref(dbClient, "designs"), {
             name,
             keyName,
             project: openProjectId,
@@ -93,7 +93,7 @@ const Blocks: FunctionComponent = () => {
         const uid = blockKeys[isRemovingIndex!]
         setIsRemovingIndex(undefined)
         setIsRemoveModalOpen(false)
-        remove(ref(dbClient, `blocks/${uid}`))
+        remove(ref(dbClient, `designs/${uid}`))
     }, [blockKeys, isRemovingIndex])
 
     return (<div className={"container content-container background--white py-5 px-sm-4 p-md-5"}>

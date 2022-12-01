@@ -52,7 +52,7 @@ const EditBlock: FunctionComponent<{ params: { blockId: string } }> = ({ params 
     }, [])
 
     useEffect(() => {
-        const unsubscribe = onValue(ref(dbClient, `blocks/${params.blockId}`), (snapshot) => {
+        const unsubscribe = onValue(ref(dbClient, `designs/${params.blockId}`), (snapshot) => {
             setBlock(snapshot.val())
         }, (error) => {
             setDataFetchErrors(error.message)
@@ -126,7 +126,7 @@ const EditBlock: FunctionComponent<{ params: { blockId: string } }> = ({ params 
 
     const onEditHandler = useCallback(async (index: number) => {
         setIsEditLoading(true)
-        const snapshot = await get(ref(dbClient, `blocks/${params.blockId}/fields/${index}`))
+        const snapshot = await get(ref(dbClient, `designs/${params.blockId}/fields/${index}`))
         const savedField: Field = snapshot.val()
         setEditingIndex(index)
         setIsEditMode(true)
@@ -180,7 +180,7 @@ const EditBlock: FunctionComponent<{ params: { blockId: string } }> = ({ params 
             }
         })
 
-        update(ref(dbClient, `blocks/${params.blockId}`), newBlock)
+        update(ref(dbClient, `designs/${params.blockId}`), newBlock)
         setIsOpen(false)
         setSelectedTab("Types")
     }, [block, dataErrors, editingIndex, getFieldFromData, navigateToTabWithErrors, params.blockId])
@@ -192,7 +192,7 @@ const EditBlock: FunctionComponent<{ params: { blockId: string } }> = ({ params 
         const { fields = [] } = block as Block
         fields.push(newField)
 
-        update(ref(dbClient, `blocks/${params.blockId}`), { fields })
+        update(ref(dbClient, `designs/${params.blockId}`), { fields })
         setIsOpen(false)
         setData({} as EditField)
         setDataErrors([])
@@ -209,7 +209,7 @@ const EditBlock: FunctionComponent<{ params: { blockId: string } }> = ({ params 
         setIsRemoveModalOpen(false)
         const newBlock: Block = { ...block! }
         newBlock.fields = newBlock.fields!.filter((field, index) => index !== removingIndex)
-        update(ref(dbClient, `blocks/${params.blockId}`), newBlock)
+        update(ref(dbClient, `designs/${params.blockId}`), newBlock)
     }, [block, params.blockId, removingIndex])
 
     const onEnterKeyDown: KeyboardEventHandler<HTMLInputElement> = useCallback((e) => {
