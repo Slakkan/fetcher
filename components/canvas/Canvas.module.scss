@@ -3,8 +3,8 @@
 .canvas {
   width: 100%;
   max-width: 1024px;
-  touch-action: none;
   &__svg {
+    touch-action: none;
     background: $off-white;
     border-radius: 16px;
   }
@@ -14,6 +14,7 @@
     &:focus {
       outline: 2px solid $primary !important;
     }
+    touch-action: auto;
   }
   &__drawrect {
     fill: greenyellow;

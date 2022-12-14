@@ -80,7 +80,9 @@ const Canvas: FunctionComponent<CanvasProps> = ({ id, savedRectangles, setSavedR
         const [pointerX, pointerY]: Coordinate = getPointer(offsetX, offsetY)
         const closestPoint: Coordinate = [Math.round(pointerY / unit), Math.round(pointerX / unit)]
 
-        return closestPoint
+        const closestPointOnCanvas: Coordinate = [Math.max(1, Math.min(closestPoint[0], 12)), Math.max(1, Math.min(closestPoint[1], 12))]
+
+        return closestPointOnCanvas
     }, [getPointer, unit])
 
     const getRectCoordinates: (offsetX: number, offsetY: number) => RectCoordinates = useCallback((offsetX, offsetY) => {
@@ -123,10 +125,10 @@ const Canvas: FunctionComponent<CanvasProps> = ({ id, savedRectangles, setSavedR
             let collisionEndCol = newRect.endCol
 
 
-            const isLeft = originCol <= savedRect.rect.startCol
-            const isRight = originCol >= savedRect.rect.endCol
-            const isTop = originRow <= savedRect.rect.startRow
-            const isBottom = originRow >= savedRect.rect.endRow
+            const isLeft = originCol < savedRect.rect.startCol || newRect.endCol === savedRect.rect.startCol
+            const isRight = originCol > savedRect.rect.endCol || newRect.startCol === savedRect.rect.endCol
+            const isTop = originRow < savedRect.rect.startRow || newRect.endRow === savedRect.rect.startRow
+            const isBottom = originRow > savedRect.rect.endRow || newRect.startRow === savedRect.rect.endRow
 
             const isTopLeftQuadrant = isTop && isLeft
             const isTopQuadrant = isTop && !isLeft && !isRight
@@ -333,7 +335,6 @@ const Canvas: FunctionComponent<CanvasProps> = ({ id, savedRectangles, setSavedR
     }, [unit])
 
     const onEditBlur = useCallback(() => {
-        setEditingRectangleIndex(-1)
         setFocusedRectangleIndex(-1);
     }, [])
 
@@ -351,25 +352,45 @@ const Canvas: FunctionComponent<CanvasProps> = ({ id, savedRectangles, setSavedR
         return () => observer?.disconnect()
     }, [])
 
-    useEffect(() => console.log(savedRectangles), [savedRectangles])
-
+    useEffect(() => {
+        const handlerMove = (e: globalThis.MouseEvent) => {
+            const rect = svgRef.current?.getBoundingClientRect()
+            let { offsetX, offsetY } = e
+            if (e.currentTarget !== svgRef.current && rect) {
+                if (e.clientY < rect.top) {
+                    offsetY = 0
+                }
+                if (e.clientX < rect.left) {
+                    offsetX = 0
+                }
+            }
+            onMove(offsetX, offsetY)
+        }
+        const handlerUp = (e: globalThis.MouseEvent) => onUp(e.offsetX, e.offsetY)
+        window.addEventListener("mouseup", handlerUp)
+        window.addEventListener("mousemove", handlerMove)
+        return () => {
+            window.removeEventListener("mouseup", handlerUp)
+            window.removeEventListener("mousemove", handlerMove)
+        }
+    }, [onMove, onUp])
 
     return (
         <div ref={canvasRef} className={styles.canvas + " d-flex flex-column px-md-3 py-5"} style={{ flexGrow: 1 }}>
             <svg ref={svgRef} className={styles.canvas__svg} viewBox={canvasViewBox} width={canvasWidth} height={canvasWidth}>
-                <rect ref={eventsRef} fill="transparent" onTouchMove={(e) => onMove(...getOffsetFromTouch(e))} onTouchStart={(e) => onDown(...getOffsetFromTouch(e))} onTouchEnd={(e) => onUp(...getOffsetFromTouch(e))} onMouseMove={(e) => onMove(e.nativeEvent.offsetX, e.nativeEvent.offsetY)} onMouseDown={(e) => onDown(e.nativeEvent.offsetX, e.nativeEvent.offsetY)} onMouseUp={(e) => onUp(e.nativeEvent.offsetX, e.nativeEvent.offsetY)} x={0} y={0} width={canvasWidth} height={canvasWidth} />
+                <rect ref={eventsRef} fill="transparent" onTouchMove={(e) => onMove(...getOffsetFromTouch(e))} onTouchStart={(e) => onDown(...getOffsetFromTouch(e))} onTouchEnd={(e) => onUp(...getOffsetFromTouch(e))} onMouseDown={(e) => onDown(e.nativeEvent.offsetX, e.nativeEvent.offsetY)} x={0} y={0} width={canvasWidth} height={canvasWidth} />
                 {dragRectangleCoords && <rect className={styles.canvas__drawrect} style={{ transform: `scale(${dragRectangleCoords!.scale[0]},${dragRectangleCoords!.scale[1]})`, transformOrigin: rectTransformOrigin }} fill="white" rx={unit / 10} x={dragRectangleCoords!.x} y={dragRectangleCoords!.y} width={dragRectangleCoords!.width} height={dragRectangleCoords!.height} />}
                 <g>
                     {generateGrid}
                 </g>
                 <g>
                     {savedRectangles.map((savedRect, index) =>
-                        <g key={`${savedRect.id}-${index}`} tabIndex={0} style={{ outline: "none", opacity: editingRectangleIndex === index ? 0 : 1 }} onFocus={() => setFocusedRectangleIndex(index)} onBlur={onEditBlur}>
-                            <rect className={styles.canvas__rect} tabIndex={0} fill="white" rx={unit / 10} x={savedRect.rect.startCol * unit + padding} y={savedRect.rect.startRow * unit + padding} width={((savedRect.rect.endCol - savedRect.rect.startCol) * unit - 2 * padding)} height={(savedRect.rect.endRow - savedRect.rect.startRow) * unit - 2 * padding} />
-                            <rect className={getExpandHandlesClass(index)} onTouchEnd={(e) => onUp(...getOffsetFromTouch(e))} onTouchMove={(e) => onMove(...getOffsetFromTouch(e))} onTouchStart={() => onExpand(index, [savedRect.rect.endRow, savedRect.rect.endCol], savedRect, [-1, -1])} onMouseDown={() => onExpand(index, [savedRect.rect.endRow, savedRect.rect.endCol], savedRect, [-1, -1])} fill={Colors.$primary} x={savedRect.rect.startCol * unit - unit / 10} y={savedRect.rect.startRow * unit - unit / 10} width={unit / 5} height={unit / 5} />
-                            <rect className={getExpandHandlesClass(index)} onTouchEnd={(e) => onUp(...getOffsetFromTouch(e))} onTouchMove={(e) => onMove(...getOffsetFromTouch(e))} onTouchStart={() => onExpand(index, [savedRect.rect.startRow, savedRect.rect.endCol], savedRect, [-1, 1])} onMouseDown={() => onExpand(index, [savedRect.rect.startRow, savedRect.rect.endCol], savedRect, [-1, 1])} fill={Colors.$primary} x={savedRect.rect.startCol * unit - unit / 10} y={savedRect.rect.endRow * unit - unit / 5 + unit / 10} width={unit / 5} height={unit / 5} />
-                            <rect className={getExpandHandlesClass(index)} onTouchEnd={(e) => onUp(...getOffsetFromTouch(e))} onTouchMove={(e) => onMove(...getOffsetFromTouch(e))} onTouchStart={() => onExpand(index, [savedRect.rect.endRow, savedRect.rect.startCol], savedRect, [1, -1])} onMouseDown={() => onExpand(index, [savedRect.rect.endRow, savedRect.rect.startCol], savedRect, [1, -1])} fill={Colors.$primary} x={savedRect.rect.endCol * unit - unit / 5 + unit / 10} y={savedRect.rect.startRow * unit - unit / 10} width={unit / 5} height={unit / 5} />
-                            <rect className={getExpandHandlesClass(index)} onTouchEnd={(e) => onUp(...getOffsetFromTouch(e))} onTouchMove={(e) => onMove(...getOffsetFromTouch(e))} onTouchStart={() => onExpand(index, [savedRect.rect.startRow, savedRect.rect.startCol], savedRect, [1, 1])} onMouseDown={() => onExpand(index, [savedRect.rect.startRow, savedRect.rect.startCol], savedRect, [1, 1])} fill={Colors.$primary} x={savedRect.rect.endCol * unit - unit / 5 + unit / 10} y={savedRect.rect.endRow * unit - unit / 5 + unit / 10} width={unit / 5} height={unit / 5} />
+                        <g key={`${savedRect.id}-${index}`} tabIndex={0} style={{ outline: "none", pointerEvents: editingRectangleIndex === index ? "none" : "auto", opacity: editingRectangleIndex === index ? 0 : 1 }} onFocus={() => setFocusedRectangleIndex(index)} onBlur={onEditBlur}>
+                            <rect className={styles.canvas__rect} onTouchEnd={(e) => onUp(...getOffsetFromTouch(e))} onMouseUp={(e) => onUp(e.nativeEvent.offsetX, e.nativeEvent.offsetY)} tabIndex={0} fill="white" rx={unit / 10} x={savedRect.rect.startCol * unit + padding} y={savedRect.rect.startRow * unit + padding} width={((savedRect.rect.endCol - savedRect.rect.startCol) * unit - 2 * padding)} height={(savedRect.rect.endRow - savedRect.rect.startRow) * unit - 2 * padding} />
+                            <rect className={getExpandHandlesClass(index)} style={{ cursor: 'nwse-resize' }} onTouchStart={() => onExpand(index, [savedRect.rect.endRow, savedRect.rect.endCol], savedRect, [-1, -1])} onTouchMove={(e) => onMove(...getOffsetFromTouch(e))} onTouchEnd={(e) => onUp(...getOffsetFromTouch(e))} onMouseDown={() => onExpand(index, [savedRect.rect.endRow, savedRect.rect.endCol], savedRect, [-1, -1])} fill={Colors.$primary} x={savedRect.rect.startCol * unit - unit / 9} y={savedRect.rect.startRow * unit - unit / 9} width={unit / 3} height={unit / 3} />
+                            <rect className={getExpandHandlesClass(index)} style={{ cursor: 'nesw-resize' }} onTouchStart={() => onExpand(index, [savedRect.rect.startRow, savedRect.rect.endCol], savedRect, [-1, 1])} onTouchMove={(e) => onMove(...getOffsetFromTouch(e))} onTouchEnd={(e) => onUp(...getOffsetFromTouch(e))} onMouseDown={() => onExpand(index, [savedRect.rect.startRow, savedRect.rect.endCol], savedRect, [-1, 1])} fill={Colors.$primary} x={savedRect.rect.startCol * unit - unit / 9} y={savedRect.rect.endRow * unit - unit / 3 + unit / 9} width={unit / 3} height={unit / 3} />
+                            <rect className={getExpandHandlesClass(index)} style={{ cursor: 'nesw-resize' }} onTouchStart={() => onExpand(index, [savedRect.rect.endRow, savedRect.rect.startCol], savedRect, [1, -1])} onTouchMove={(e) => onMove(...getOffsetFromTouch(e))} onTouchEnd={(e) => onUp(...getOffsetFromTouch(e))} onMouseDown={() => onExpand(index, [savedRect.rect.endRow, savedRect.rect.startCol], savedRect, [1, -1])} fill={Colors.$primary} x={savedRect.rect.endCol * unit - unit / 3 + unit / 9} y={savedRect.rect.startRow * unit - unit / 9} width={unit / 3} height={unit / 3} />
+                            <rect className={getExpandHandlesClass(index)} style={{ cursor: 'nwse-resize' }} onTouchStart={() => onExpand(index, [savedRect.rect.startRow, savedRect.rect.startCol], savedRect, [1, 1])} onTouchMove={(e) => onMove(...getOffsetFromTouch(e))} onTouchEnd={(e) => onUp(...getOffsetFromTouch(e))} onMouseDown={() => onExpand(index, [savedRect.rect.startRow, savedRect.rect.startCol], savedRect, [1, 1])} fill={Colors.$primary} x={savedRect.rect.endCol * unit - unit / 3 + unit / 9} y={savedRect.rect.endRow * unit - unit / 3 + unit / 9} width={unit / 3} height={unit / 3} />
                         </g>
                     )}
                 </g>
